@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Waste Classifier</title>
+    <title>Real-Time Waste Classifier</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,34 +18,42 @@
         .container {
             text-align: center;
             background: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
             max-width: 400px;
             width: 100%;
         }
         h1 {
             color: #4a90e2;
-            font-size: 24px;
-            margin-bottom: 10px;
+            font-size: 28px;
+            margin-bottom: 20px;
         }
         #webcam-container {
             margin: 20px auto;
-            width: 200px;
-            height: 200px;
+            width: 240px;
+            height: 240px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
         }
         #label-container div {
             font-size: 18px;
-            margin: 5px 0;
+            margin: 8px 0;
+            color: #4a4a4a;
+            background: #f0f7ff;
+            padding: 5px 10px;
+            border-radius: 4px;
         }
         button {
             background-color: #4a90e2;
             color: white;
             font-size: 16px;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            margin-top: 15px;
         }
         button:hover {
             background-color: #357ab8;
@@ -54,8 +62,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>Waste Classifier</h1>
-        <button type="button" onclick="init()">Start</button>
+        <h1>Real-Time Waste Classifier</h1>
+        <button type="button" onclick="init()">Start Classification</button>
         <div id="webcam-container"></div>
         <div id="label-container"></div>
     </div>
@@ -74,7 +82,7 @@
             maxPredictions = model.getTotalClasses();
 
             const flip = true;
-            webcam = new tmImage.Webcam(200, 200, flip);
+            webcam = new tmImage.Webcam(240, 240, flip);
             await webcam.setup();
             await webcam.play();
             window.requestAnimationFrame(loop);
@@ -95,7 +103,8 @@
         async function predict() {
             const prediction = await model.predict(webcam.canvas);
             for (let i = 0; i < maxPredictions; i++) {
-                const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                const probabilityPercent = (prediction[i].probability * 100).toFixed(2);
+                const classPrediction = `${prediction[i].className}: ${probabilityPercent}%`;
                 labelContainer.childNodes[i].innerHTML = classPrediction;
             }
         }
